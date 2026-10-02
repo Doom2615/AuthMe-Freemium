@@ -21,6 +21,7 @@ import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bedrock.BedrockService;
 import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -92,6 +93,9 @@ public class PaperDialogFlowListener implements Listener {
     @Inject
     private PremiumLoginVerifier premiumLoginVerifier;
 
+    @Inject
+    private BedrockService bedrockService;
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerConfigure(AsyncPlayerConnectionConfigureEvent event) {
         if (!commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)) {
@@ -114,6 +118,10 @@ public class PaperDialogFlowListener implements Listener {
             return;
         }
         if (shouldSkipDialogs(normalizedName, connection)) {
+            return;
+        }
+        // Bedrock players are logged in automatically on join and can't use Java dialogs
+        if (bedrockService.canAutoLogin(playerId)) {
             return;
         }
 

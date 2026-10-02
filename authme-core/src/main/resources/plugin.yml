@@ -1,5 +1,7 @@
 # noinspection YAMLSchemaValidation
 name: ${pluginDescription.name}
+# Keeps compatibility with plugins that depend on "AuthMe"
+provides: [AuthMe]
 # noinspection YAMLSchemaValidation
 authors: [${pluginDescription.authors}]
 website: ${project.parent.url}
@@ -15,6 +17,7 @@ softdepend:
     - Essentials
     - EssentialsSpawn
     - packetevents
+    - floodgate
 libraries:
   - ch.jalu:injector:${dependencies.injector.version}
   - net.ricecode:string-similarity:${dependencies.string-similarity.version}

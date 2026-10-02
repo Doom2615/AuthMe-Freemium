@@ -46,6 +46,8 @@ import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
@@ -56,7 +58,8 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 public class AuthMe extends JavaPlugin {
 
     // Constants
-    private static final String PLUGIN_NAME = "AuthMeReloaded";
+    private static final String PLUGIN_NAME = "AuthMe-Freemium";
+    private static final String LEGACY_DATA_FOLDER = "AuthMe";
     private static final String LOG_FILENAME = "authme.log";
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
@@ -112,6 +115,33 @@ public class AuthMe extends JavaPlugin {
      */
     public static String getPluginBuildNumber() {
         return pluginBuildNumber;
+    }
+
+    /**
+     * Method called when the server loads the plugin.
+     */
+    @Override
+    public void onLoad() {
+        migrateLegacyDataFolder();
+    }
+
+    /**
+     * Moves the data folder of the original AuthMe plugin (plugins/AuthMe) to the data folder of
+     * AuthMe-Freemium, so that existing configs and databases are kept after switching to this fork.
+     */
+    private void migrateLegacyDataFolder() {
+        File dataFolder = getDataFolder();
+        File legacyFolder = new File(dataFolder.getParentFile(), LEGACY_DATA_FOLDER);
+        if (dataFolder.exists() || !legacyFolder.isDirectory()) {
+            return;
+        }
+        try {
+            Files.move(legacyFolder.toPath(), dataFolder.toPath());
+            getLogger().info("Migrated data folder " + legacyFolder.getPath() + " to " + dataFolder.getPath());
+        } catch (IOException e) {
+            getLogger().warning("Could not migrate data folder " + legacyFolder.getPath() + " to "
+                + dataFolder.getPath() + ": " + e.getMessage() + ". Please move it manually.");
+        }
     }
 
     /**

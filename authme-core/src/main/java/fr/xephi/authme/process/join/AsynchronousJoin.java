@@ -31,6 +31,7 @@ import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bedrock.BedrockService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
@@ -141,6 +142,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private RecoveryCodeService recoveryCodeService;
 
+    @Inject
+    private BedrockService bedrockService;
+
     AsynchronousJoin() {
     }
 
@@ -183,6 +187,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (!validatePlayerCountForIp(player, ip)) {
+            return;
+        }
+
+        // Bedrock players (Geyser + Floodgate) are already authenticated by Xbox Live
+        if (bedrockService.canAutoLogin(player.getUniqueId()) && handleBedrockAutoLogin(player, name)) {
             return;
         }
 
@@ -274,6 +283,30 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRecoveryEmail, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
+    }
+
+    /**
+     * Logs in (and registers if needed) a Bedrock player verified by Floodgate.
+     *
+     * @param player the Bedrock player
+     * @param name the lowercase name of the player
+     * @return true if the player has been handled, false if the regular join flow should continue
+     */
+    private boolean handleBedrockAutoLogin(Player player, String name) {
+        if (playerCache.isAuthenticated(name)) {
+            return true;
+        }
+        if (!database.isAuthAvailable(name)
+            && (!bedrockService.isAutoRegisterEnabled() || !bedrockService.registerBedrockPlayer(player))) {
+            return false;
+        }
+        logger.info("Bedrock player " + player.getName() + " has been logged in automatically (Floodgate).");
+        if (bungeeSender.isEnabled()) {
+            bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
+        } else {
+            bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+        }
+        return true;
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {

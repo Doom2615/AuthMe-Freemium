@@ -1,162 +1,157 @@
-# AuthMeReloaded
-**"The best authentication plugin for the Bukkit modding API!"**
+# AuthMe-Freemium
+**AuthMeReloaded fork with premium/freemium login and automatic Bedrock (Geyser + Floodgate) login.**
 
-<img src="wallpaper.png?raw=true" alt="AuthMeLogo"/>
+[![Build & Release](https://github.com/Doom2615/authme-freemium/actions/workflows/build.yml/badge.svg)](https://github.com/Doom2615/authme-freemium/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/Doom2615/authme-freemium?include_prereleases&label=release)](https://github.com/Doom2615/authme-freemium/releases)
+[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 
-| Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
-| **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Jenkins Tests](https://img.shields.io/jenkins/tests?jobUrl=https%3A%2F%2Fci.codemc.io%2Fjob%2FAuthMe%2Fjob%2FAuthMeReloaded) |
-| **Other CIs:**    | [![Build Status](https://www.travis-ci.com/AuthMe/AuthMeReloaded.svg?branch=master)](https://www.travis-ci.com/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
+<img src="wallpaper.png?raw=true" alt="AuthMe logo"/>
 
 ## Description
 
-Prevent username stealing on your server!<br>
-Use it to secure your Offline mode server or to increase your Online mode server's protection!
+AuthMe-Freemium is an authentication plugin for offline-mode (cracked) and mixed servers, based on
+[AuthMeReloaded](https://github.com/AuthMe/AuthMeReloaded). It prevents username stealing while letting
+players who are already verified skip the password prompt:
 
-AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
-typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.
+- **Java premium players** (official Mojang account) log in automatically after `/premium`.
+- **Bedrock players** (via Geyser + Floodgate, verified by Xbox Live) log in automatically — no `/register` or `/login`.
+- **Everyone else** ("freemium" / cracked players) registers and logs in with a password as usual.
 
-With the Session Login feature, you don't have to execute the authentication command every time you connect to the server!
-Each command and every feature can be enabled or disabled from our well-structured configuration file.
+Unauthenticated players can't move, chat, run commands, or use their inventory until they log in.
 
-You can also create your own translation file and, if you want, you can share it with us! :)
+## What's new in this fork
 
-#### Features:
-<ul>
-  <li>Dedicated builds for <strong>Spigot Legacy</strong> (1.16–1.19), <strong>Spigot 1.21</strong> (1.20–1.21), <strong>Paper 1.21+</strong>, and <strong>Folia 1.21+</strong></li>
-  <li>Native proxy plugins for <strong>BungeeCord</strong> and <strong>Velocity</strong></li>
-  <li><strong>E-Mail Recovery System!</strong></li>
-  <li>Username spoofing protection.</li>
-  <li>Countries Whitelist/Blacklist! <a href="https://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
-  <li><strong>Built-in AntiBot System!</strong></li>
-  <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
-  <li><strong>Avoid the "Logged in from another location" message!</strong></li>
-  <li>Two-factor (2FA) support!</li>
-  <li>Session Login!</li>
-  <li>Messages served in each player's own Minecraft client language, with server-language fallback</li>
-  <li>Editable translations and messages!</li>
-  <li><strong>MySQL, MariaDB, PostgreSQL and SQLite Backend support!</strong></li>
-  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2, PBKDF2BASE64 — <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">full list</a></li>
-  <li>Supports hashes from external systems for zero-downtime migration (XFBCRYPT, MYBB, PHPBB, JOOMLA, WORDPRESS, WBB3/WBB4, IPB3, and <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">more</a>)</li>
-  <li>Custom MySQL tables/columns names (useful with forum databases)</li>
-  <li><strong>Cached database queries!</strong></li>
-  <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
-  <li>Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs</li>
-  <li>Restricted users (associate a username with an IP)</li>
-  <li>Protect player's inventory until correct authentication (requires PacketEvents)</li>
-  <li><strong>Premium bypass: Mojang-account holders skip password auth (requires PacketEvents)</strong></li>
-  <li>Saves the quit location of the player</li>
-  <li>Ender pearls thrown before authentication are returned to the player on login</li>
-  <li>Separate timeouts for login and registration</li>
-  <li>Email address confirmation required before saving on <code>/email add</code> and <code>/email change</code></li>
-  <li>Automatic database backup</li>
-  <li>Available languages: <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md">translations</a></li>
-  <li><strong>Account importers for Auth+, LibreLogin, LimboAuth, nLogin, OpeNLogin, tiAuth — and built-in SQLite ↔ MySQL/MariaDB/PostgreSQL migration.</strong></li>
-</ul>
+| Feature | Description |
+|---|---|
+| **Bedrock auto-login** | Players connecting through Geyser are detected with the Floodgate API and logged in automatically. |
+| **Bedrock auto-register** | First-time Bedrock players get an account with a random password, so they never see a register prompt. |
+| **Floodgate linked accounts** | Bedrock players linked to a Java account log into that Java account automatically (configurable). |
+| **Account takeover protection** | Bedrock auto-login is disabled when Floodgate has no username prefix, unless you explicitly allow it. |
+| **Bedrock-safe dialogs** | Bedrock players skip the Paper pre-join / post-join dialogs, which Bedrock clients can't display. |
+| **Automatic builds & releases** | GitHub Actions builds every jar and publishes them on the [Releases](https://github.com/Doom2615/authme-freemium/releases) page. |
+| **Dependency & upstream tracking** | Dependabot keeps dependencies up to date and a daily workflow opens an issue when AuthMeReloaded has new commits. |
 
-#### Configuration
-[How to configure AuthMe](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md)
+## Bedrock auto-login (Geyser + Floodgate)
 
-#### Dialog UI
-AuthMe can display graphical login/register dialogs instead of chat-based prompts.
+### Requirements
+- [Geyser](https://geysermc.org/) and [Floodgate](https://geysermc.org/wiki/floodgate/) 2.x.
+- **Floodgate must be installed on the server running AuthMe-Freemium.** Behind a proxy (Velocity/BungeeCord),
+  install Floodgate on the proxy **and** on every backend server (as Floodgate's own setup guide describes),
+  with the same `key.pem`.
 
-- `settings.registration.dialog.postJoin.enable` enables the **post-join** dialog flow.
-- `settings.registration.dialog.preJoin.enable` enables the **pre-join** dialog flow on **Paper/Folia**.
-- Both options are independent: you can enable either one, both, or neither.
-- Pre-join dialogs currently require modern dialog-capable server versions such as **Paper/Folia 1.21.11+**.
-- Verified premium players skip the pre-join dialog entirely when premium bypass is enabled.
+### How it works
+1. A Bedrock player joins; AuthMe-Freemium asks Floodgate whether the player is a Bedrock player.
+2. **Registered** → logged in immediately (login commands, session and proxy messages work as with a normal login).
+3. **Not registered** and `bedrock.autoRegister: true` → an account with a random 32-character password is created, then the player is logged in.
+4. **Not registered** and `bedrock.autoRegister: false` → the normal register flow is used.
 
-#### Premium bypass
-AuthMe can let players with a legitimate Mojang account skip password authentication entirely.
-Identity is verified via a cryptographic handshake with Mojang's session server during the
-Minecraft login phase — no password prompt is ever shown.
+Java players are not affected and keep the normal password / premium flow.
 
-- Enable with `settings.enablePremium: true` in `config.yml`.
-- Players opt in with `/premium` and out with `/freemium` (must be logged in). Admins can enrol or remove players with `/authme premium <player>` / `/authme freemium <player>`.
-- **Direct-connection (offline-mode, no proxy):** requires [PacketEvents](https://github.com/retrooper/packetevents) 2.x. Without it, premium bypass is disabled at startup (fail-closed).
-- **Behind an online-mode proxy (Velocity / BungeeCord):** the proxy authenticates with Mojang and forwards the verified UUID — no PacketEvents needed on the backend. Set `Hooks.bungeecord: true` on the backend.
-- **Behind an offline-mode proxy:** install `authme-velocity` or `authme-bungee` on the proxy; premium players are authenticated per-player by the proxy and the verified UUID is forwarded to the backend.
+### Configuration (`config.yml`)
+```yml
+bedrock:
+    # Auto-login Bedrock players (needs Floodgate on this server)
+    autoLogin: true
+    # Create an account with a random password for new Bedrock players
+    autoRegister: true
+    # Auto-login Bedrock players linked to a Java account (Floodgate account linking)
+    autoLoginLinkedAccounts: true
+    # Allow auto-login when Floodgate's username-prefix is empty (NOT recommended)
+    allowWithoutUsernamePrefix: false
+```
+
+> **Security note:** keep a Floodgate `username-prefix` (default `.`). Without a prefix, a Bedrock player called
+> `Steve` would log into the Java player `Steve`'s account. AuthMe-Freemium refuses Bedrock auto-login in that
+> case unless you set `bedrock.allowWithoutUsernamePrefix: true`.
+
+A Bedrock player who wants to log in from Java later can get a password from an admin with
+`/authme password <player> <password>`.
+
+## Premium / Freemium login
+Players with a legitimate Mojang account can skip password authentication. Identity is verified with
+Mojang's session server during the login phase.
+
+- Enable with `settings.enablePremium: true`.
+- Players opt in with `/premium` and out with `/freemium` (while logged in). Admins: `/authme premium <player>` / `/authme freemium <player>`.
+- **Offline-mode, no proxy:** requires [PacketEvents](https://github.com/retrooper/packetevents) 2.x (fail-closed without it).
+- **Online-mode proxy:** the proxy forwards the verified UUID; set `Hooks.bungeecord: true` on the backend.
+- **Offline-mode proxy:** install the AuthMe-Freemium Velocity or Bungee jar on the proxy.
 - Full documentation: [docs/premium.md](docs/premium.md)
 
-#### Commands
-[Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
-#### Permissions
-- authme.player.* - for all user commands
-- authme.admin.* - for all admin commands
-- [List of all permission nodes](http://github.com/AuthMe/AuthMeReloaded/blob/master/docs/permission_nodes.md)
+## All features
+- Builds for **Spigot Legacy** (1.16–1.19), **Spigot 1.21** (1.20–1.21), **Paper 1.21+** and **Folia 1.21+**
+- Proxy plugins for **BungeeCord** and **Velocity**
+- **Bedrock auto-login / auto-register** through Floodgate
+- **Premium bypass** for Mojang-account holders (`/premium`, `/freemium`)
+- Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs
+- Session login, two-factor authentication (TOTP) and e-mail recovery
+- Username spoofing protection, built-in AntiBot, country whitelist/blacklist
+- MySQL, MariaDB, PostgreSQL and SQLite with cached queries
+- Hashes: SHA256, ARGON2, BCRYPT, PBKDF2 and many forum/CMS formats — [full list](docs/hash_algorithms.md)
+- Inventory protection and tab-complete blocking before login (PacketEvents)
+- Messages in each player's client language — [translations](docs/translations.md)
+- Importers for Auth+, LibreLogin, LimboAuth, nLogin, OpeNLogin, tiAuth and SQLite ↔ SQL migration — [converters](docs/converters.md)
+- Automatic database backups
 
-#### How To
-- [How to use the account importers (Auth+, LibreLogin, LimboAuth, nLogin, OpeNLogin, tiAuth)](docs/converters.md)
-- [Website integration](https://github.com/AuthMe/AuthMeReloaded/tree/master/samples/website_integration)
-- Convert between database types (e.g. SQLite to MySQL): `/authme converter sqliteToSql`
+## Download
+Grab the jars from the [Releases page](https://github.com/Doom2615/authme-freemium/releases):
+- **Stable releases** are published when a `v*` tag is pushed (e.g. `v6.0.2`).
+- **Development Build** (pre-release, tag `dev-build`) is updated on every push to `master`.
 
+| Jar | Platform | Java |
+|---|---|---|
+| `AuthMe-Freemium-*-Spigot-Legacy.jar` | Spigot 1.16.x – 1.19.x | 17+ |
+| `AuthMe-Freemium-*-Spigot-1.21.jar` | Spigot 1.20.x – 1.21.x | 21+ |
+| `AuthMe-Freemium-*-Paper.jar` | Paper 1.21+ | 21+ |
+| `AuthMe-Freemium-*-Folia.jar` | Folia 1.21+ | 21+ |
+| `AuthMe-Freemium-*-Bungee.jar` | BungeeCord / Waterfall proxy | 21+ |
+| `AuthMe-Freemium-*-Velocity.jar` | Velocity 3.4+ proxy | 21+ |
 
-## Links and Contacts
+Optional plugins: [PacketEvents](https://github.com/retrooper/packetevents) 2.x, [Floodgate](https://geysermc.org/wiki/floodgate/) 2.x.
 
- - **Support:**
-   - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
-   - [Discord](https://discord.gg/Vn9eCyE)
-   - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
-   - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
+## Migrating from AuthMeReloaded
+1. Stop the server and remove the old `AuthMe-*.jar`.
+2. Drop in the matching `AuthMe-Freemium-*.jar`.
+3. Start the server. The old `plugins/AuthMe` folder is moved to `plugins/AuthMe-Freemium` automatically,
+   so your config, messages and database are kept.
 
-- **Dev resources:**
-  - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
-  - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
-  ```xml
-    <repositories>
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
-    </repositories>
+The plugin declares `provides: [AuthMe]`, so plugins that depend on `AuthMe` keep working.
+The Java API (`fr.xephi.authme.api.v3.AuthMeApi`) and commands are unchanged.
+The Bungee/Velocity proxy plugins keep their original data folder names, so their configs are kept too.
 
-    <dependencies>
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme-core</artifactId>
-            <version>6.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-  ```
+## Configuration, commands and permissions
+- [Configuration](docs/config.md)
+- [Commands](docs/commands.md)
+- [Permission nodes](docs/permission_nodes.md) — `authme.player.*` for user commands, `authme.admin.*` for admin commands
+- [Proxy setup](docs/proxies)
+- [Website integration](samples/website_integration)
 
-- **Statistics:**
-    [![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)](https://bstats.org/plugin/bukkit/AuthMe/164)
+## Building
+Requirements: JDK 21+ (full build) or JDK 17 (core, tools and Spigot Legacy only), Maven 3.8.8+.
 
-## Requirements
+```sh
+git clone https://github.com/Doom2615/authme-freemium.git
+cd authme-freemium
+mvn clean package
+```
 
-##### Compiling requirements:
->- JDK 17+ for `authme-core`, `authme-tools`, and `authme-spigot-legacy`
->- JDK 21+ for the full multi-module build (`authme-bungee`, `authme-spigot-1.21`, `authme-paper-common`, `authme-paper`, `authme-folia`, `authme-velocity`)
->- Maven (3.8.8+)
->- Git/GitHub (Optional)
+Jars are written to `<module>/target/AuthMe-Freemium-<version>-<Platform>.jar`. More commands: [docs/build.md](docs/build.md).
 
-##### How to compile the project:
->- Clone the project with Git/GitHub
->- Execute command `mvn clean package`
->- With JDK 17, Maven builds only the Java 17-compatible modules
->- With JDK 21+, Maven builds the full reactor
->- Build and tooling command reference: [docs/build.md](docs/build.md)
+### CI / automation
+- [`.github/workflows/build.yml`](.github/workflows/build.yml) — builds and tests on Java 17 and 21 for pull requests, pushes to `master` and `v*` tags, then publishes the jars to Releases.
+- [`.github/dependabot.yml`](.github/dependabot.yml) — daily Maven and weekly GitHub Actions update PRs.
+- [`.github/workflows/upstream-sync.yml`](.github/workflows/upstream-sync.yml) — daily check of [AuthMe/AuthMeReloaded](https://github.com/AuthMe/AuthMeReloaded); opens an issue listing new upstream commits.
 
-##### Running requirements:
->- Use the jar matching your server platform/version:
->  - Java 17+: `AuthMe-*-Spigot-Legacy.jar` — Spigot 1.16.x – 1.19.x
->  - Java 21+: `AuthMe-*-Spigot-1.21.jar` — Spigot 1.20.x – 1.21.x
->  - Java 21+: `AuthMe-*-Paper.jar` — Paper 1.21+
->  - Java 21+: `AuthMe-*-Folia.jar` — Folia 1.21+
->  - Java 21+: `AuthMe-*-Bungee.jar` — BungeeCord / Waterfall proxy (1.19 API)
->  - Java 21+: `AuthMe-*-Velocity.jar` — Velocity 3.4+ proxy
->- [PacketEvents](https://github.com/retrooper/packetevents) 2.x (optional plugin; required for inventory protection, tab-complete blocking, and premium bypass in direct-connection mode)
+## Support
+Report bugs and request features on the [issue tracker](https://github.com/Doom2615/authme-freemium/issues).
+Please don't report AuthMe-Freemium issues to the upstream AuthMeReloaded team.
 
 ## Credits
+- Maintained by [Doom2615](https://github.com/Doom2615).
+- Based on [AuthMeReloaded](https://github.com/AuthMe/AuthMeReloaded) by the AuthMe-Team
+  ([developers](https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team), [translators](https://github.com/AuthMe/AuthMeReloaded/wiki/Translators)).
+- Bedrock support uses the [GeyserMC Floodgate API](https://github.com/GeyserMC/Floodgate).
+- This product uses data from the GeoLite API created by MaxMind, available at https://www.maxmind.com
 
-##### Contributors:
-Team members: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
-
-Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and pomo4ka
-
-Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex
-
-##### GeoIP License:
-This product uses data from the GeoLite API created by MaxMind, available at https://www.maxmind.com
+## License
+GNU General Public License v3.0 — see [LICENSE](LICENSE).

@@ -1,0 +1,65 @@
+name: Upstream AuthMeReloaded check
+
+# Dependabot can't watch another repository's source code, so this workflow checks
+# AuthMe/AuthMeReloaded every day and opens (or updates) an issue when it has new commits.
+# Pull them in with the "Sync fork" button on GitHub or `git pull upstream master`.
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  UPSTREAM_REPO: AuthMe/AuthMeReloaded
+  UPSTREAM_BRANCH: master
+  ISSUE_TITLE: Upstream AuthMeReloaded has new updates
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compare with upstream
+        id: check
+        run: |
+          base="${{ github.event.repository.default_branch }}"
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream "$UPSTREAM_BRANCH"
+          count=$(git rev-list --count "origin/${base}..upstream/${UPSTREAM_BRANCH}")
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          echo "Upstream has ${count} commit(s) not in ${base}"
+          {
+            echo "[${UPSTREAM_REPO}](https://github.com/${UPSTREAM_REPO}) has **${count}** new commit(s) not in \`${base}\`."
+            echo
+            echo "Latest release: $(curl -fsSL "https://api.github.com/repos/${UPSTREAM_REPO}/releases/latest" | jq -r '.tag_name // "n/a"')"
+            echo
+            echo '```'
+            git log --oneline --no-merges "origin/${base}..upstream/${UPSTREAM_BRANCH}" | head -50
+            echo '```'
+            echo
+            echo "Sync with the **Sync fork** button or:"
+            echo '```sh'
+            echo "git remote add upstream https://github.com/${UPSTREAM_REPO}.git"
+            echo "git pull upstream ${UPSTREAM_BRANCH}"
+            echo '```'
+            echo "_Updated $(date -u '+%Y-%m-%d %H:%M UTC')_"
+          } > body.md
+
+      - name: Open or update issue
+        if: steps.check.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          number=$(gh issue list --state open --search "in:title \"${ISSUE_TITLE}\"" --json number --jq '.[0].number')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file body.md
+          else
+            gh issue create --title "$ISSUE_TITLE" --body-file body.md
+          fi

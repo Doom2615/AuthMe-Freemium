@@ -90,7 +90,7 @@
     </dependencies>
 
     <build>
-        <finalName>AuthMe-${project.version}-${module.classifier}</finalName>
+        <finalName>${project.outputName}-${project.version}-${module.classifier}</finalName>
 
         <resources>
             <resource>

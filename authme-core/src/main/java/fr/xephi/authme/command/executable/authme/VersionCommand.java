@@ -31,13 +31,14 @@ public class VersionCommand implements ExecutableCommand {
         printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);
         printDeveloper(sender, "Hex3l", "Hex3l", "Developer", onlinePlayers);
         printDeveloper(sender, "krusic22", "krusic22", "Support", onlinePlayers);
+        printDeveloper(sender, "Doom2615", "Doom2615", "AuthMe-Freemium Maintainer", onlinePlayers);
         sender.sendMessage(ChatColor.GOLD + "Retired authors:");
         printDeveloper(sender, "Alexandre Vanhecke", "xephi59", "Original Author", onlinePlayers);
         printDeveloper(sender, "Gnat008", "gnat008", "Developer, Retired", onlinePlayers);
         printDeveloper(sender, "DNx5", "DNx5", "Developer, Retired", onlinePlayers);
         printDeveloper(sender, "Tim Visee", "timvisee", "Developer, Retired", onlinePlayers);
         sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE
-            + "https://github.com/AuthMe/AuthMeReloaded");
+            + "https://github.com/Doom2615/authme-freemium");
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE

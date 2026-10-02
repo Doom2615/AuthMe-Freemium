@@ -102,6 +102,10 @@
             <artifactId>packetevents-spigot</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
         </dependency>

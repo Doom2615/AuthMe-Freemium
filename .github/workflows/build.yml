@@ -1,0 +1,121 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test-java17:
+    name: Test (Java 17, Spigot Legacy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+      - name: Build & test
+        run: mvn -V -B clean verify -PskipJavadocGeneration
+
+  build:
+    name: Build all jars (Java 21)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Compute version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "args=-Drevision=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build & test
+        run: >
+          mvn -V -B clean package -PskipJavadocGeneration
+          ${{ steps.version.outputs.args }}
+          -Dproject.buildNumber=${{ github.run_number }}
+
+      - name: Collect jars
+        run: |
+          mkdir -p dist
+          find . -path '*/target/*' -name 'AuthMe-Freemium-*.jar' \
+            ! -name '*-sources.jar' ! -name '*-javadoc.jar' -exec cp {} dist/ \;
+          ls -l dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AuthMe-Freemium-jars
+          path: dist/*.jar
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: [test-java17, build]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: AuthMe-Freemium-jars
+          path: dist
+
+      # Tagged builds (v*) become a stable release
+      - name: Stable release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: AuthMe-Freemium ${{ github.ref_name }}
+          files: dist/*.jar
+          generate_release_notes: true
+          make_latest: true
+
+      # Every push to master updates the rolling "dev-build" pre-release
+      - name: Move dev-build tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git tag -f dev-build "$GITHUB_SHA"
+          git push -f origin refs/tags/dev-build
+
+      - name: Remove old dev-build assets
+        if: github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view dev-build >/dev/null 2>&1; then
+            gh release view dev-build --json assets --jq '.assets[].name' | while read -r asset; do
+              gh release delete-asset dev-build "$asset" -y
+            done
+          fi
+
+      - name: Development pre-release
+        if: github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: dev-build
+          name: Development Build #${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          files: dist/*.jar
+          body: |
+            Automatic development build of `${{ github.sha }}` (build #${{ github.run_number }}).
+            Not a stable release — use at your own risk.

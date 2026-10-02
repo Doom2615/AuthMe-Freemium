@@ -9,30 +9,30 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
-    <name>AuthMeReloaded</name>
-    <description>The first authentication plugin for the Bukkit API!</description>
+    <name>AuthMe-Freemium</name>
+    <description>AuthMeReloaded fork with premium/freemium and Bedrock (Floodgate) auto-login.</description>
     <inceptionYear>2013</inceptionYear>
-    <url>https://github.com/AuthMe/AuthMeReloaded</url>
+    <url>https://github.com/Doom2615/authme-freemium</url>
 
     <organization>
-        <name>AuthMe-Team</name>
-        <url>https://github.com/AuthMe</url>
+        <name>Doom2615</name>
+        <url>https://github.com/Doom2615</url>
     </organization>
 
     <scm>
-        <connection>scm:git:https://github.com/AuthMe/AuthMeReloaded.git</connection>
-        <developerConnection>scm:git:git@github.com:AuthMe/AuthMeReloaded.git</developerConnection>
-        <url>https://github.com/AuthMe/AuthMeReloaded</url>
+        <connection>scm:git:https://github.com/Doom2615/authme-freemium.git</connection>
+        <developerConnection>scm:git:git@github.com:Doom2615/authme-freemium.git</developerConnection>
+        <url>https://github.com/Doom2615/authme-freemium</url>
     </scm>
 
     <ciManagement>
-        <system>jenkins</system>
-        <url>https://ci.codemc.io/job/AuthMe/job/AuthMeReloaded/</url>
+        <system>GitHub Actions</system>
+        <url>https://github.com/Doom2615/authme-freemium/actions</url>
     </ciManagement>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/AuthMe/AuthMeReloaded/issues</url>
+        <url>https://github.com/Doom2615/authme-freemium/issues</url>
     </issueManagement>
 
     <distributionManagement>
@@ -72,7 +72,7 @@
         <maven.minimumVersion>3.8.8</maven.minimumVersion>
 
         <!-- Versioning properties -->
-        <project.outputName>AuthMe</project.outputName>
+        <project.outputName>AuthMe-Freemium</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
         <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
         <project.finalNameBase>${project.outputName}-${project.version}</project.finalNameBase>
@@ -81,7 +81,7 @@
         <pluginDescription.name>${project.outputName}</pluginDescription.name>
         <pluginDescription.version>${project.versionCode}</pluginDescription.version>
         <pluginDescription.main>fr.xephi.authme.AuthMe</pluginDescription.main>
-        <pluginDescription.authors>sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
+        <pluginDescription.authors>Doom2615, sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
 
         <!-- Java libraries -->
         <dependencies.injector.version>1.0</dependencies.injector.version>
@@ -106,6 +106,7 @@
         <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
         <dependencies.bungeecord.version>1.21-R0.4</dependencies.bungeecord.version>
         <dependencies.packetevents.version>2.12.1</dependencies.packetevents.version>
+        <dependencies.floodgate.version>2.2.5-SNAPSHOT</dependencies.floodgate.version>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.25.4</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
@@ -453,6 +454,16 @@
 
         <!-- PaperMC Repo -->
         <repository>
+            <id>opencollab-repo</id>
+            <url>https://repo.opencollab.dev/main/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
             <releases>
@@ -642,6 +653,14 @@
             <groupId>com.github.retrooper</groupId>
             <artifactId>packetevents-velocity</artifactId>
             <version>${dependencies.packetevents.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Floodgate (Geyser) API, used to detect Bedrock players -->
+        <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+            <version>${dependencies.floodgate.version}</version>
             <scope>provided</scope>
         </dependency>
 

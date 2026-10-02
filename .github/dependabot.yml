@@ -5,7 +5,19 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  groups:
+    maven-plugins:
+      patterns:
+      - "org.apache.maven.plugins:*"
+    test-dependencies:
+      patterns:
+      - "org.junit*"
+      - "org.mockito*"
+      - "org.hamcrest*"
   ignore:
+  # Versions bundled with / required by the server, keep in sync manually
   - dependency-name: com.google.code.gson:gson
   - dependency-name: com.google.guava:guava
   - dependency-name: org.apache.logging.log4j:log4j-core
@@ -16,3 +28,5 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
+  labels:
+  - dependencies

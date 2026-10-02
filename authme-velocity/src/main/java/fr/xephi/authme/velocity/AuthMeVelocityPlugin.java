@@ -27,8 +27,8 @@ import java.nio.file.Path;
     name = AbstractAuthMeVelocityPlugin.PLUGIN_NAME,
     version = AbstractAuthMeVelocityPlugin.PLUGIN_VERSION,
     description = "Velocity proxy bridge for AuthMe inter-server authentication",
-    authors = {"AuthMe-Team"},
-    url = "https://github.com/AuthMe/AuthMeReloaded")
+    authors = {"Doom2615", "AuthMe-Team"},
+    url = "https://github.com/Doom2615/authme-freemium")
 public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
 
     private final ProxyServer server;

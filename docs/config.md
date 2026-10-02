@@ -2,7 +2,7 @@
 <!-- File auto-generated on Tue May 19 08:22:43 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
-The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
+The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe-Freemium folder,
 with which you can configure various settings. The following is the initial contents of
 the generated config.yml file.
 
@@ -641,6 +641,23 @@ BackupSystem:
     OnServerStop: true
     # Windows only: MySQL installation path
     MysqlWindowsPath: C:\Program Files\MySQL\MySQL Server 5.1\
+bedrock:
+    # Automatically log in Bedrock Edition players connecting through Geyser + Floodgate.
+    # Bedrock players are already authenticated by Xbox Live, so they don't need a password.
+    # Requires the Floodgate plugin on this server (also when running behind a proxy).
+    # Without Floodgate, this setting has no effect.
+    autoLogin: true
+    # Automatically register Bedrock players who don't have an account yet.
+    # A random, unknown password is generated, so the account can only be used by this
+    # Bedrock player until an admin sets a password with /authme password.
+    autoRegister: true
+    # Auto-login Bedrock players linked to a Java account (Floodgate account linking).
+    # Linked players join with the Java name and log into that Java player's account.
+    autoLoginLinkedAccounts: true
+    # Allow auto-login when Floodgate's username-prefix is empty.
+    # Without a prefix a Bedrock player can share the name of a Java player and would be logged
+    # into that Java player's account. Only enable this if you understand the risk.
+    allowWithoutUsernamePrefix: false
 
 ```
 

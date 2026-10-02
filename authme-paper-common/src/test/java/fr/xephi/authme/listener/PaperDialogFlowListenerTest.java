@@ -20,6 +20,7 @@ import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bedrock.BedrockService;
 import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -72,6 +73,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldShowErrorDialogAndKeepFutureOpenForEmptyPasswordSubmission() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         Messages messages = mock(Messages.class);
         ValidationService validationService = mock(ValidationService.class);
@@ -121,6 +123,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldFallbackToPostJoinDialogWhenPreJoinLoginIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(false);
@@ -142,6 +145,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldKickWhenPreJoinLoginIsCancelledAndSettingEnabled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         Messages messages = mock(Messages.class);
         setField(listener, "commonService", commonService);
@@ -166,6 +170,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldFallbackToPostJoinDialogWhenPreJoinRegisterIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(false);
@@ -187,6 +192,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldKickWhenPreJoinRegisterIsCancelledAndSettingEnabled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         Messages messages = mock(Messages.class);
         setField(listener, "commonService", commonService);
@@ -211,6 +217,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldSkipPreJoinDialogsForAuthenticatedPlayerEvenIfPostJoinDialogsAreDisabled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
@@ -249,6 +256,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldSkipPreJoinDialogsForPlayerWithValidSession() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
@@ -290,6 +298,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldSkipPreJoinDialogsForProxyAutoLogin() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
@@ -331,6 +340,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldSkipPreJoinDialogsForVerifiedPremiumPlayer() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         DataSource dataSource = mock(DataSource.class);
@@ -386,6 +396,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldNotSkipPreJoinDialogsForUnverifiedPremiumPlayer() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         DataSource dataSource = mock(DataSource.class);
@@ -424,6 +435,7 @@ public class PaperDialogFlowListenerTest {
         // proxy forwarding hasn't been applied yet, the pre-join dialog must be skipped and the
         // final UUID check deferred to AsynchronousJoin.
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         PremiumLoginVerifier premiumLoginVerifier = mock(PremiumLoginVerifier.class);
         setField(listener, "commonService", commonService);
@@ -449,6 +461,7 @@ public class PaperDialogFlowListenerTest {
         // When the proxy has already forwarded the Mojang UUID (v4) into the PlayerProfile,
         // we can verify directly at the pre-join phase.
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
 
@@ -469,6 +482,7 @@ public class PaperDialogFlowListenerTest {
     public void shouldNotSkipPreJoinDialogForImpostorWithMismatchedMojangUuidInProxyMode() throws Exception {
         // An impostor with a different Mojang UUID (v4) must NOT bypass the dialog.
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
 
@@ -496,6 +510,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldRetireSessionOfClosedConnectionOnly() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        setField(listener, "bedrockService", mock(BedrockService.class));
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
         setField(listener, "preJoinDialogService", preJoinDialogService);
 
