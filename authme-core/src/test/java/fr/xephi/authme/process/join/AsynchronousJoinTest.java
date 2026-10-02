@@ -23,6 +23,7 @@ import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bedrock.BedrockService;
+import fr.xephi.authme.service.bedrock.BedrockFormService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
@@ -111,6 +112,8 @@ public class AsynchronousJoinTest {
     private ProxyLoginRequestValidator proxyLoginRequestValidator;
     @Mock
     private BedrockService bedrockService;
+    @Mock
+    private BedrockFormService bedrockFormService;
 
     @BeforeAll
     public static void initLogger() {
@@ -402,31 +405,11 @@ public class AsynchronousJoinTest {
 
         // then
         verify(asynchronousLogin).forceLogin(player);
-        verify(bedrockService, never()).registerBedrockPlayer(player);
         verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
     }
 
     @Test
-    public void shouldAutoRegisterAndLoginUnregisteredBedrockPlayer() {
-        // given
-        Player player = mockPlayer("Bobby");
-        setUpRegisteredJoin(player);
-        given(database.isAuthAvailable("bobby")).willReturn(false);
-        given(bedrockService.canAutoLogin(player.getUniqueId())).willReturn(true);
-        given(bedrockService.isAutoRegisterEnabled()).willReturn(true);
-        given(bedrockService.registerBedrockPlayer(player)).willReturn(true);
-
-        // when
-        asynchronousJoin.processJoin(player);
-
-        // then
-        verify(bedrockService).registerBedrockPlayer(player);
-        verify(asynchronousLogin).forceLogin(player);
-        verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
-    }
-
-    @Test
-    public void shouldUseRegularFlowForBedrockPlayerWhenAutoRegisterIsDisabled() {
+    public void shouldUseRegularRegisterFlowForUnregisteredBedrockPlayer() {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
@@ -434,15 +417,37 @@ public class AsynchronousJoinTest {
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(service.getProperty(RestrictionSettings.REGISTER_TIMEOUT)).willReturn(30);
         given(bedrockService.canAutoLogin(player.getUniqueId())).willReturn(true);
-        given(bedrockService.isAutoRegisterEnabled()).willReturn(false);
 
         // when
         asynchronousJoin.processJoin(player);
 
         // then
-        verify(bedrockService, never()).registerBedrockPlayer(player);
         verify(asynchronousLogin, never()).forceLogin(player);
         verify(limboService).createLimboPlayer(player, false);
+    }
+
+    @Test
+    public void shouldShowBedrockLoginFormInsteadOfJavaDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
+        given(dialogAdapter.isDialogSupported()).willReturn(true);
+        given(bedrockFormService.shouldUseForms(player)).willReturn(true);
+        AtomicReference<Runnable> delayedTask = new AtomicReference<>();
+        doAnswer(invocation -> {
+            delayedTask.set(invocation.getArgument(1));
+            return mock(fr.xephi.authme.service.CancellableTask.class);
+        }).when(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(40L));
+
+        // when
+        asynchronousJoin.processJoin(player);
+        delayedTask.get().run();
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(bedrockFormService).showAuthForm(player, true);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     private void setUpRegisteredJoin(Player player) {

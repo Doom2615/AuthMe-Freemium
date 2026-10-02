@@ -27,6 +27,7 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bedrock.BedrockFormService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -97,6 +98,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private DialogStateService dialogStateService;
+
+    @Inject
+    private BedrockFormService bedrockFormService;
 
     AsynchronousLogin() {
     }
@@ -275,6 +279,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
     }
 
     private void showTotpDialogIfEnabled(Player player) {
+        if (bedrockFormService.shouldUseForms(player)) {
+            bukkitService.runTaskLater(player,
+                () -> bedrockFormService.showForm(player, BedrockFormService.FormType.TOTP), 1L);
+            return;
+        }
         boolean dialogEnabled = service.getProperty(RegistrationSettings.USE_DIALOG_UI)
             || service.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI);
         if (!dialogEnabled || !dialogAdapter.isDialogSupported()) {

@@ -23,6 +23,7 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bedrock.BedrockFormService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -92,6 +93,8 @@ class AsynchronousLoginTest {
     private DialogWindowService dialogWindowService;
     @Mock
     private DialogStateService dialogStateService;
+    @Mock
+    private BedrockFormService bedrockFormService;
 
     @BeforeAll
     static void initLogger() {

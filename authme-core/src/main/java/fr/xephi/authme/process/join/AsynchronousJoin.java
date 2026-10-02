@@ -31,6 +31,7 @@ import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bedrock.BedrockFormService;
 import fr.xephi.authme.service.bedrock.BedrockService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
@@ -61,6 +62,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
+
+    private static final long BEDROCK_FORM_DELAY_TICKS = 40L;
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousJoin.class);
 
@@ -144,6 +147,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private BedrockService bedrockService;
+
+    @Inject
+    private BedrockFormService bedrockFormService;
 
     AsynchronousJoin() {
     }
@@ -286,18 +292,18 @@ public class AsynchronousJoin implements AsynchronousProcess {
     }
 
     /**
-     * Logs in (and registers if needed) a Bedrock player verified by Floodgate.
+     * Logs in a registered Bedrock player verified by Floodgate.
      *
      * @param player the Bedrock player
      * @param name the lowercase name of the player
      * @return true if the player has been handled, false if the regular join flow should continue
+     *         (e.g. the player isn't registered yet and gets the normal register prompt/dialog)
      */
     private boolean handleBedrockAutoLogin(Player player, String name) {
         if (playerCache.isAuthenticated(name)) {
             return true;
         }
-        if (!database.isAuthAvailable(name)
-            && (!bedrockService.isAutoRegisterEnabled() || !bedrockService.registerBedrockPlayer(player))) {
+        if (!database.isAuthAvailable(name)) {
             return false;
         }
         logger.info("Bedrock player " + player.getName() + " has been logged in automatically (Floodgate).");
@@ -363,6 +369,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             if (pendingForceLogin) {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                return;
+            }
+            // Bedrock players get native Bedrock forms instead of Java dialogs. The short delay
+            // lets the Bedrock client finish loading, otherwise the form may be dropped.
+            if (bedrockFormService.shouldUseForms(player)) {
+                bukkitService.runTaskLater(player,
+                    () -> bedrockFormService.showAuthForm(player, isAuthAvailable), BEDROCK_FORM_DELAY_TICKS);
                 return;
             }
             if (!shouldSkipPostJoinDialog

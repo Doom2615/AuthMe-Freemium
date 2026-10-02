@@ -29,8 +29,6 @@ final class FloodgateHook {
         if (player == null) {
             return null;
         }
-        String prefix = api.getPlayerPrefix();
-        return new BedrockPlayerInfo(player.getUsername(), player.getXuid(), player.isLinked(),
-            prefix == null ? "" : prefix);
+        return new BedrockPlayerInfo(player.getUsername(), player.getXuid(), player.isLinked());
     }
 }

@@ -23,11 +23,9 @@ Unauthenticated players can't move, chat, run commands, or use their inventory u
 
 | Feature | Description |
 |---|---|
-| **Bedrock auto-login** | Players connecting through Geyser are detected with the Floodgate API and logged in automatically. |
-| **Bedrock auto-register** | First-time Bedrock players get an account with a random password, so they never see a register prompt. |
+| **Bedrock auto-login** | Registered players that Floodgate detects as Bedrock players are logged in automatically. Everyone else is treated as a Java player. |
+| **Bedrock forms** | Bedrock players get native Bedrock forms for login, register and 2FA instead of Java dialogs or chat commands. |
 | **Floodgate linked accounts** | Bedrock players linked to a Java account log into that Java account automatically (configurable). |
-| **Account takeover protection** | Bedrock auto-login is disabled when Floodgate has no username prefix, unless you explicitly allow it. |
-| **Bedrock-safe dialogs** | Bedrock players skip the Paper pre-join / post-join dialogs, which Bedrock clients can't display. |
 | **Automatic builds & releases** | GitHub Actions builds every jar and publishes them on the [Releases](https://github.com/Doom2615/authme-freemium/releases) page. |
 | **Dependency & upstream tracking** | Dependabot keeps dependencies up to date and a daily workflow opens an issue when AuthMeReloaded has new commits. |
 
@@ -40,32 +38,39 @@ Unauthenticated players can't move, chat, run commands, or use their inventory u
   with the same `key.pem`.
 
 ### How it works
-1. A Bedrock player joins; AuthMe-Freemium asks Floodgate whether the player is a Bedrock player.
-2. **Registered** → logged in immediately (login commands, session and proxy messages work as with a normal login).
-3. **Not registered** and `bedrock.autoRegister: true` → an account with a random 32-character password is created, then the player is logged in.
-4. **Not registered** and `bedrock.autoRegister: false` → the normal register flow is used.
+1. A player joins; AuthMe-Freemium asks Floodgate whether it is a real Bedrock player.
+   Only players Floodgate reports as Bedrock players get Bedrock handling — **everyone else is a Java player**.
+2. **Registered Bedrock player** → logged in immediately (login commands, sessions and proxy messages work as with a normal login).
+3. **New Bedrock player** → registers normally, through a native Bedrock **register form** (password, confirmation and/or
+   e-mail, depending on your registration settings).
+4. If auto-login is disabled (`bedrock.autoLogin: false`, or a linked account with `autoLoginLinkedAccounts: false`),
+   the Bedrock player gets a **login form**. Players with 2FA enabled get a **2FA code form**.
 
-Java players are not affected and keep the normal password / premium flow.
+Java players are not affected and keep the normal password / premium flow and Java dialogs.
+
+### Bedrock forms
+Bedrock clients can't show Java dialogs, so AuthMe-Freemium sends native Bedrock forms through Floodgate
+(the Cumulus form API):
+
+- **Login form** — password field.
+- **Register form** — the same fields as the Java register dialog (password, confirm password, e-mail).
+- **2FA form** — authenticator code field.
+
+Form titles and labels use the same translated texts as the Java dialogs. A submitted form runs the same
+`/login`, `/register` or `/2fa code` command, so all password rules and checks are identical. If the attempt fails
+(e.g. wrong password), the form is shown again. Forms are used on every server version (Spigot Legacy, Spigot 1.21,
+Paper, Folia) and don't depend on the Java dialog settings. Like the Java dialogs, forms can't be dismissed: closing one opens it again.
 
 ### Configuration (`config.yml`)
 ```yml
 bedrock:
-    # Auto-login Bedrock players (needs Floodgate on this server)
+    # Auto-login registered Bedrock players (needs Floodgate on this server)
     autoLogin: true
-    # Create an account with a random password for new Bedrock players
-    autoRegister: true
     # Auto-login Bedrock players linked to a Java account (Floodgate account linking)
     autoLoginLinkedAccounts: true
-    # Allow auto-login when Floodgate's username-prefix is empty (NOT recommended)
-    allowWithoutUsernamePrefix: false
+    # Native Bedrock forms for login / register / 2FA
+    forms: true
 ```
-
-> **Security note:** keep a Floodgate `username-prefix` (default `.`). Without a prefix, a Bedrock player called
-> `Steve` would log into the Java player `Steve`'s account. AuthMe-Freemium refuses Bedrock auto-login in that
-> case unless you set `bedrock.allowWithoutUsernamePrefix: true`.
-
-A Bedrock player who wants to log in from Java later can get a password from an admin with
-`/authme password <player> <password>`.
 
 ## Premium / Freemium login
 Players with a legitimate Mojang account can skip password authentication. Identity is verified with
@@ -81,7 +86,7 @@ Mojang's session server during the login phase.
 ## All features
 - Builds for **Spigot Legacy** (1.16–1.19), **Spigot 1.21** (1.20–1.21), **Paper 1.21+** and **Folia 1.21+**
 - Proxy plugins for **BungeeCord** and **Velocity**
-- **Bedrock auto-login / auto-register** through Floodgate
+- **Bedrock auto-login** and native **Bedrock login/register forms** through Floodgate
 - **Premium bypass** for Mojang-account holders (`/premium`, `/freemium`)
 - Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs
 - Session login, two-factor authentication (TOTP) and e-mail recovery

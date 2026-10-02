@@ -642,22 +642,19 @@ BackupSystem:
     # Windows only: MySQL installation path
     MysqlWindowsPath: C:\Program Files\MySQL\MySQL Server 5.1\
 bedrock:
-    # Automatically log in Bedrock Edition players connecting through Geyser + Floodgate.
-    # Bedrock players are already authenticated by Xbox Live, so they don't need a password.
+    # Automatically log in registered Bedrock Edition players (Geyser + Floodgate).
+    # Only players that Floodgate detects as Bedrock players are logged in automatically;
+    # everyone else is treated as a Java player. New Bedrock players register normally.
     # Requires the Floodgate plugin on this server (also when running behind a proxy).
     # Without Floodgate, this setting has no effect.
     autoLogin: true
-    # Automatically register Bedrock players who don't have an account yet.
-    # A random, unknown password is generated, so the account can only be used by this
-    # Bedrock player until an admin sets a password with /authme password.
-    autoRegister: true
     # Auto-login Bedrock players linked to a Java account (Floodgate account linking).
     # Linked players join with the Java name and log into that Java player's account.
     autoLoginLinkedAccounts: true
-    # Allow auto-login when Floodgate's username-prefix is empty.
-    # Without a prefix a Bedrock player can share the name of a Java player and would be logged
-    # into that Java player's account. Only enable this if you understand the risk.
-    allowWithoutUsernamePrefix: false
+    # Show login, register and 2FA prompts to Bedrock players as native Bedrock forms.
+    # Used whenever a Bedrock player isn't logged in automatically (e.g. not registered yet).
+    # Works on every server version; Java dialog settings don't affect Bedrock players.
+    forms: true
 
 ```
 

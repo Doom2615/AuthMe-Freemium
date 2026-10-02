@@ -120,11 +120,11 @@ public class PaperDialogFlowListener implements Listener {
         if (shouldSkipDialogs(normalizedName, connection)) {
             return;
         }
-        // Bedrock players are logged in automatically on join and can't use Java dialogs
-        if (bedrockService.canAutoLogin(playerId)) {
+        // Bedrock players can't display Java dialogs: they are auto-logged in or get
+        // native Bedrock forms after joining (see BedrockFormService)
+        if (bedrockService.isBedrockPlayer(playerId)) {
             return;
         }
-
         long sessionId = preJoinDialogService.openSession(normalizedName);
         connectionSessions.put(connection, sessionId);
 

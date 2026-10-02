@@ -394,6 +394,50 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
+    public void shouldSkipJavaPreJoinDialogsForBedrockPlayer() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        BedrockService bedrockService = mock(BedrockService.class);
+        setField(listener, "bedrockService", bedrockService);
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        DataSource dataSource = mock(DataSource.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "dataSource", dataSource);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+
+        UUID playerId = UUID.randomUUID();
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(playerCache.isAuthenticated(".bobby")).willReturn(false);
+        given(proxySessionManager.shouldResumeSession(".bobby")).willReturn(false);
+        given(sessionService.hasValidSession(".bobby", null)).willReturn(false);
+        given(bedrockService.isBedrockPlayer(playerId)).willReturn(true);
+
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn(".Bobby");
+
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
+
+        verify(preJoinDialogService, never()).openSession(anyString());
+        verifyNoInteractions(audience);
+    }
+
+    @Test
     public void shouldNotSkipPreJoinDialogsForUnverifiedPremiumPlayer() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         setField(listener, "bedrockService", mock(BedrockService.class));
