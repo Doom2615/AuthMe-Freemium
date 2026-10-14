@@ -51,12 +51,18 @@ jobs:
             echo '```'
             echo "_Updated $(date -u '+%Y-%m-%d %H:%M UTC')_"
           } > body.md
+          cat body.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update issue
         if: steps.check.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Forks have Issues disabled by default; the report is still in the job summary.
+          if [ "$(gh api "repos/${GITHUB_REPOSITORY}" --jq '.has_issues')" != "true" ]; then
+            echo "::warning::Issues are disabled on this repository (Settings > General > Features > Issues). See the job summary for the upstream report."
+            exit 0
+          fi
           number=$(gh issue list --state open --search "in:title \"${ISSUE_TITLE}\"" --json number --jq '.[0].number')
           if [ -n "$number" ]; then
             gh issue edit "$number" --body-file body.md
